@@ -368,6 +368,7 @@ function App() {
                   <p>{t('filesSavedOnDevice')}</p>
                 </div>
                 <button className="primary-button" type="button" disabled={!xrayFileName && !eagFileName && !gaitFileName}>{t('continueWithFiles')}</button>
+                <button className="back-btn" type="button" onClick={() => { localStorage.removeItem(HISTORY_PAGE_KEY); setHistorySaved(false); }}>{t('backToHistory')}</button>
               </>
             ) : (
               <>

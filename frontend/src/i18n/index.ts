@@ -79,6 +79,7 @@ const resources = {
       removeReplace: 'Remove / replace',
       continueWithFiles: 'Continue with selected files',
       next: 'Next',
+      backToHistory: 'Back to patient history',
       treatmentDetailsRequired: 'Enter the treatment details.',
       otherJointDiseasesRequired: 'Enter the other joint disease details.',
       injuryDetailsRequired: 'Enter the previous injury details.',
