@@ -213,7 +213,6 @@ function App() {
     setPendingSyncCount((current) => current + 1);
     localStorage.setItem(SAVED_PATIENT_KEY, JSON.stringify(patient));
     setSavedPatient(patient);
-    setHistorySaved(true);
   };
 
   const saveHistory = async () => {
@@ -245,6 +244,7 @@ function App() {
     localStorage.setItem(SAVED_PATIENT_KEY, JSON.stringify(patient));
     localStorage.setItem(HISTORY_PAGE_KEY, 'uploads');
     setSavedPatient(patient);
+    setHistorySaved(true);
   };
 
   const handleXray = async (file: File | undefined) => {
