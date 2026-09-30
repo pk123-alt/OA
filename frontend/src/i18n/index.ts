@@ -63,6 +63,7 @@ const resources = {
       pendingSync: 'Sync queue: {{count}}',
       patientSavedLocally: 'Patient saved on this device',
       syncNotConnected: 'Sync not connected. This record has not been sent to a server.',
+      savedOnDevice: 'Patient information is saved on this device.',
       consentMedicalHistory: 'Consent and medical history',
       nextStepPlaceholder: 'This part will be available in the next version.',
       addAnotherPatient: 'Add another patient',

@@ -276,7 +276,7 @@ function App() {
 
             <button className="primary-button" type="button" onClick={() => void saveHistory()}>{t('saveAndContinue')}</button>
             <div className="next-step-box">
-              <p>{t('syncNotConnected')}</p>
+              <p>{t('savedOnDevice')}</p>
             </div>
             <button className="primary-button" type="button" onClick={() => { setForm(emptyForm()); setSavedPatient(null); }}>
               {t('addAnotherPatient')}
