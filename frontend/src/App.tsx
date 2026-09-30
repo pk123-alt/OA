@@ -80,6 +80,10 @@ function App() {
   const [otherJointDiseases, setOtherJointDiseases] = useState('');
   const [previousInjury, setPreviousInjury] = useState(false);
   const [injuryDetails, setInjuryDetails] = useState('');
+  const [historySaved, setHistorySaved] = useState(false);
+  const [xrayFileName, setXrayFileName] = useState('');
+  const [eagFileName, setEagFileName] = useState('');
+  const [gaitFileName, setGaitFileName] = useState('');
 
   useEffect(() => {
     localStorage.setItem(DRAFT_KEY, JSON.stringify(form));
@@ -171,6 +175,7 @@ function App() {
     });
     setPendingSyncCount((current) => current + 1);
     setSavedPatient(patient);
+    setHistorySaved(true);
   };
 
   const saveHistory = async () => {
@@ -217,6 +222,37 @@ function App() {
         {header}
         <main className="layout">
           <section className="screen stack">
+            {historySaved ? (
+              <>
+                <div className="instruction-box">
+                  <h2>{t('uploadPageTitle')}</h2>
+                  <p>{t('uploadPageIntro')}</p>
+                </div>
+
+                <label className="upload-box">
+                  <span>{t('uploadXray')}</span>
+                  <input type="file" accept="image/*" onChange={(event) => setXrayFileName(event.target.files?.[0]?.name ?? '')} />
+                </label>
+                {xrayFileName && <div className="file-readout">{xrayFileName}</div>}
+
+                <label className="upload-box">
+                  <span>{t('uploadEag')}</span>
+                  <input type="file" accept=".csv,.txt,.xlsx,.xls,.json,.dat" onChange={(event) => setEagFileName(event.target.files?.[0]?.name ?? '')} />
+                </label>
+                {eagFileName && <div className="file-readout">{eagFileName}</div>}
+
+                <label className="upload-box">
+                  <span>{t('uploadGait')}</span>
+                  <input type="file" accept="video/*" onChange={(event) => setGaitFileName(event.target.files?.[0]?.name ?? '')} />
+                </label>
+                {gaitFileName && <div className="file-readout">{gaitFileName}</div>}
+
+                <div className="next-step-box">
+                  <p>{t('filesSavedOnDevice')}</p>
+                </div>
+              </>
+            ) : (
+              <>
             <div className="instruction-box">
               <h2>{t('patientHistoryTitle')}</h2>
               <p>{t('medicalHistoryIntro')}</p>
@@ -278,6 +314,8 @@ function App() {
             <div className="next-step-box">
               <p>{t('savedOnDevice')}</p>
             </div>
+              </>
+            )}
             <button className="primary-button" type="button" onClick={() => { setForm(emptyForm()); setSavedPatient(null); }}>
               {t('addAnotherPatient')}
             </button>
