@@ -352,7 +352,7 @@ function App() {
       <main className="layout">
         <section className="screen stack">
           <div className="instruction-box">
-            <h2>{t('newPatient')}</h2>
+            <h2>{t('patientDetailsTitle')}</h2>
             <p>{t('patientFormIntro')}</p>
           </div>
 
