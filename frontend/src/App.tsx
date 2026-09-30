@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import './App.css';
+import { predictXray } from './api/client';
 import { enqueueSync, getPendingSyncItems, savePatient } from './db';
 import type { Patient } from './types';
 
@@ -95,6 +96,7 @@ function App() {
   const [injuryDetails, setInjuryDetails] = useState('');
   const [historySaved, setHistorySaved] = useState(() => localStorage.getItem(HISTORY_PAGE_KEY) === 'uploads');
   const [xrayFileName, setXrayFileName] = useState('');
+  const [xrayFile, setXrayFile] = useState<File | null>(null);
   const [xrayPreviewUrl, setXrayPreviewUrl] = useState('');
   const [eagFileName, setEagFileName] = useState('');
   const [gaitFileName, setGaitFileName] = useState('');
@@ -103,6 +105,8 @@ function App() {
   const [gaitStatus, setGaitStatus] = useState<UploadStatus>('not-uploaded');
   const [eagSamples, setEagSamples] = useState<number[]>([]);
   const [uploadError, setUploadError] = useState('');
+  const [prediction, setPrediction] = useState<{ severity: string; confidence: number } | null>(null);
+  const [isPredicting, setIsPredicting] = useState(false);
 
   useEffect(() => {
     localStorage.setItem(DRAFT_KEY, JSON.stringify(form));
@@ -257,12 +261,28 @@ function App() {
     }
     try {
       await createImageBitmap(file);
+      setXrayFile(file);
       setXrayFileName(file.name);
       setXrayPreviewUrl(URL.createObjectURL(file));
       setXrayStatus('uploaded');
     } catch {
       setXrayStatus('failed');
       setUploadError(t('xrayValidationError'));
+    }
+  };
+
+  const predictOaRisk = async () => {
+    if (!xrayFile) return;
+    setIsPredicting(true);
+    setUploadError('');
+    try {
+      const result = await predictXray(xrayFile);
+      const confidence = Number(result.probabilities[String(result.predicted_class)] ?? 0);
+      setPrediction({ severity: result.severity || result.grade_labels[String(result.predicted_class)], confidence });
+    } catch {
+      setUploadError(t('predictionUnavailable'));
+    } finally {
+      setIsPredicting(false);
     }
   };
 
@@ -345,8 +365,10 @@ function App() {
                   <input type="file" accept="image/*" capture="environment" onChange={(event) => void handleXray(event.target.files?.[0])} />
                 </label>
                 <div className={`upload-status ${xrayStatus}`}>{t(xrayStatus)}</div>
-                {xrayFileName && <div className="file-readout">{xrayFileName} <button type="button" className="text-button" onClick={() => { setXrayFileName(''); setXrayPreviewUrl(''); setXrayStatus('not-uploaded'); }}>{t('removeReplace')}</button></div>}
+                {xrayFileName && <div className="file-readout">{xrayFileName} <button type="button" className="text-button" onClick={() => { setXrayFileName(''); setXrayFile(null); setXrayPreviewUrl(''); setXrayStatus('not-uploaded'); setPrediction(null); }}>{t('removeReplace')}</button></div>}
                 {xrayPreviewUrl && <div className="preview-wrap"><img src={xrayPreviewUrl} alt={t('xrayPreviewAlt')} /></div>}
+                <button className="primary-button" type="button" onClick={() => void predictOaRisk()} disabled={!xrayFile || isPredicting}>{isPredicting ? t('predicting') : t('predictOaRisk')}</button>
+                {prediction && <div className="result-card show"><strong>{prediction.severity}</strong><small>{t('riskConfidence', { confidence: (prediction.confidence * 100).toFixed(1) })}</small><p>{prediction.severity === 'Grade 0' ? t('lowerOaRisk') : t('doctorReviewAdvice')}</p></div>}
 
                 <label className="upload-box">
                   <span>{t('uploadEag')}</span>
@@ -440,7 +462,7 @@ function App() {
             </div>
               </>
             )}
-            <button className="primary-button" type="button" onClick={() => { localStorage.removeItem(SAVED_PATIENT_KEY); localStorage.removeItem(HISTORY_PAGE_KEY); setForm(emptyForm()); setSavedPatient(null); setHistorySaved(false); setXrayFileName(''); setXrayPreviewUrl(''); }}>
+            <button className="primary-button" type="button" onClick={() => { localStorage.removeItem(SAVED_PATIENT_KEY); localStorage.removeItem(HISTORY_PAGE_KEY); setForm(emptyForm()); setSavedPatient(null); setHistorySaved(false); setXrayFileName(''); setXrayFile(null); setXrayPreviewUrl(''); setPrediction(null); }}>
               {t('addAnotherPatient')}
             </button>
             <small className="screen-footer">{t('screeningAidOnly')}</small>
