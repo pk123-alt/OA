@@ -7,6 +7,11 @@ export type Patient = {
   language: string;
   age: number;
   medicalHistory: string;
+  jointPain: boolean;
+  painLevel: number;
+  treatmentUndergoing: boolean;
+  treatmentDetails: string;
+  otherJointDiseases: string;
   previousInjury: boolean;
   injuryDetails: string;
   consent: boolean;

@@ -206,6 +206,23 @@ select {
   color: #115e59;
 }
 
+.choice-field {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.choice-field legend {
+  margin-bottom: 10px;
+  color: #334155;
+  font-weight: 600;
+}
+
+.choice-row {
+  display: flex;
+  gap: 20px;
+}
+
 .field textarea {
   resize: vertical;
   min-height: 96px;

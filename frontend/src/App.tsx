@@ -73,6 +73,11 @@ function App() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [savedPatient, setSavedPatient] = useState<Patient | null>(null);
   const [medicalHistory, setMedicalHistory] = useState('');
+  const [jointPain, setJointPain] = useState(false);
+  const [painLevel, setPainLevel] = useState(0);
+  const [treatmentUndergoing, setTreatmentUndergoing] = useState(false);
+  const [treatmentDetails, setTreatmentDetails] = useState('');
+  const [otherJointDiseases, setOtherJointDiseases] = useState('');
   const [previousInjury, setPreviousInjury] = useState(false);
   const [injuryDetails, setInjuryDetails] = useState('');
 
@@ -85,6 +90,11 @@ function App() {
       language: form.language,
       age: Number(form.age) || 0,
       medicalHistory: '',
+      jointPain: false,
+      painLevel: 0,
+      treatmentUndergoing: false,
+      treatmentDetails: '',
+      otherJointDiseases: '',
       previousInjury: false,
       injuryDetails: '',
       consent: false,
@@ -139,6 +149,11 @@ function App() {
       language: form.language,
       age: Number(form.age),
       medicalHistory: '',
+      jointPain: false,
+      painLevel: 0,
+      treatmentUndergoing: false,
+      treatmentDetails: '',
+      otherJointDiseases: '',
       previousInjury: false,
       injuryDetails: '',
       consent: false,
@@ -163,6 +178,11 @@ function App() {
     const patient = {
       ...savedPatient,
       medicalHistory: medicalHistory.trim(),
+      jointPain,
+      painLevel: jointPain ? painLevel : 0,
+      treatmentUndergoing,
+      treatmentDetails: treatmentDetails.trim(),
+      otherJointDiseases: otherJointDiseases.trim(),
       previousInjury,
       injuryDetails: injuryDetails.trim(),
       syncStatus: 'pending' as const,
@@ -198,9 +218,44 @@ function App() {
         <main className="layout">
           <section className="screen stack">
             <div className="instruction-box">
-              <h2>{t('medicalHistoryTitle')}</h2>
+              <h2>{t('patientHistoryTitle')}</h2>
               <p>{t('medicalHistoryIntro')}</p>
             </div>
+
+            <fieldset className="choice-field">
+              <legend>{t('jointPainQuestion')}</legend>
+              <div className="choice-row">
+                <label className="checkbox-row"><input type="radio" name="jointPain" checked={jointPain} onChange={() => setJointPain(true)} /> {t('yes')}</label>
+                <label className="checkbox-row"><input type="radio" name="jointPain" checked={!jointPain} onChange={() => { setJointPain(false); setPainLevel(0); }} /> {t('no')}</label>
+              </div>
+            </fieldset>
+
+            {jointPain && (
+              <label className="field">
+                <span>{t('painLevelLabel')}: {painLevel}/10</span>
+                <input type="range" min="0" max="10" step="1" value={painLevel} onChange={(event) => setPainLevel(Number(event.target.value))} />
+              </label>
+            )}
+
+            <fieldset className="choice-field">
+              <legend>{t('treatmentQuestion')}</legend>
+              <div className="choice-row">
+                <label className="checkbox-row"><input type="radio" name="treatment" checked={treatmentUndergoing} onChange={() => setTreatmentUndergoing(true)} /> {t('yes')}</label>
+                <label className="checkbox-row"><input type="radio" name="treatment" checked={!treatmentUndergoing} onChange={() => { setTreatmentUndergoing(false); setTreatmentDetails(''); }} /> {t('no')}</label>
+              </div>
+            </fieldset>
+
+            {treatmentUndergoing && (
+              <label className="field">
+                <span>{t('treatmentDetailsLabel')}</span>
+                <textarea value={treatmentDetails} onChange={(event) => setTreatmentDetails(event.target.value)} rows={3} placeholder={t('treatmentDetailsPlaceholder')} />
+              </label>
+            )}
+
+            <label className="field">
+              <span>{t('otherJointDiseasesLabel')}</span>
+              <textarea value={otherJointDiseases} onChange={(event) => setOtherJointDiseases(event.target.value)} rows={3} placeholder={t('otherJointDiseasesPlaceholder')} />
+            </label>
 
             <label className="field">
               <span>{t('medicalHistoryLabel')}</span>
