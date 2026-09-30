@@ -161,6 +161,51 @@ select {
   background: #fff;
 }
 
+.field input {
+  min-height: 52px;
+  font-size: 1.05rem;
+}
+
+.field-error {
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+.language-field {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.language-field legend {
+  margin-bottom: 10px;
+  color: #334155;
+  font-weight: 600;
+}
+
+.language-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.language-button {
+  min-height: 52px;
+  padding: 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  background: #fff;
+  color: #334155;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.language-button.selected {
+  border-color: #0f766e;
+  background: #ccfbf1;
+  color: #115e59;
+}
+
 .field textarea {
   resize: vertical;
   min-height: 96px;

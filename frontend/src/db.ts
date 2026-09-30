@@ -13,6 +13,11 @@ class OAScreeningDB extends Dexie {
       screenings: 'id, patientId, type, createdAt, updatedAt, status',
       syncQueue: '++id, screeningId, status, createdAt, updatedAt',
     });
+    this.version(2).stores({
+      patients: 'id, createdAt',
+      screenings: 'id, patientId, type, createdAt, updatedAt, status',
+      syncQueue: '++id, recordType, recordId, status, createdAt, updatedAt',
+    });
   }
 }
 

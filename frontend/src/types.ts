@@ -3,8 +3,12 @@ export type AssessmentType = 'xray' | 'signal' | 'video' | 'questionnaire';
 export type Patient = {
   id: string;
   name: string;
+  phone: string;
+  language: string;
   age: number;
   consent: boolean;
+  workerUserId: string;
+  syncStatus: 'pending' | 'synced' | 'failed';
   createdAt: string;
 };
 
@@ -29,7 +33,9 @@ export type Screening = {
 
 export type SyncQueueItem = {
   id?: number;
-  screeningId: string;
+  recordType: 'patient' | 'screening';
+  recordId: string;
+  screeningId?: string;
   payload: unknown;
   status: 'pending' | 'sent' | 'failed';
   retryCount: number;
