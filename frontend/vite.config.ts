@@ -3,6 +3,7 @@ import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
+  base: '/OA/',
   plugins: [
     react(),
     VitePWA({
@@ -14,13 +15,13 @@ export default defineConfig({
         theme_color: '#0f766e',
         background_color: '#f8fafc',
         display: 'standalone',
-        start_url: '/',
-        scope: '/',
+        start_url: '/OA/',
+        scope: '/OA/',
         lang: 'en',
         orientation: 'portrait-primary',
         icons: [
           {
-            src: '/oa-icon.svg',
+            src: '/OA/oa-icon.svg',
             sizes: 'any',
             type: 'image/svg+xml',
             purpose: 'any maskable',
