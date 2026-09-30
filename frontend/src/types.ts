@@ -11,6 +11,7 @@ export type Patient = {
   painLevel: number;
   treatmentUndergoing: boolean;
   treatmentDetails: string;
+  otherJointDiseasesPresent: boolean;
   otherJointDiseases: string;
   previousInjury: boolean;
   injuryDetails: string;

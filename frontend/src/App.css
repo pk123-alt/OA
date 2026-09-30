@@ -360,6 +360,43 @@ select {
   font-weight: 600;
 }
 
+.upload-status {
+  width: fit-content;
+  margin-top: 8px;
+  padding: 5px 9px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.upload-status.not-uploaded { background: #e2e8f0; color: #475569; }
+.upload-status.uploaded { background: #dcfce7; color: #166534; }
+.upload-status.failed { background: #fee2e2; color: #991b1b; }
+
+.text-button {
+  border: 0;
+  background: transparent;
+  color: #0f766e;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.waveform-preview {
+  width: 100%;
+  height: 100px;
+  margin-top: 12px;
+  border: 1px solid #dbe7e4;
+  border-radius: 10px;
+  background: #f8fafc;
+}
+
+.waveform-preview polyline {
+  fill: none;
+  stroke: #0f766e;
+  stroke-width: 2;
+}
+
 .file-list {
   margin: 12px 0 0;
   padding-left: 18px;

@@ -6,6 +6,7 @@ import type { Patient } from './types';
 
 type NetworkStatus = 'online' | 'offline';
 type PatientLanguage = 'en' | 'hi' | 'as' | 'mni' | 'lus' | 'adi';
+type UploadStatus = 'not-uploaded' | 'uploaded' | 'failed';
 
 type PatientForm = {
   id: string;
@@ -88,6 +89,7 @@ function App() {
   const [painLevel, setPainLevel] = useState(0);
   const [treatmentUndergoing, setTreatmentUndergoing] = useState(false);
   const [treatmentDetails, setTreatmentDetails] = useState('');
+  const [otherJointDiseasesPresent, setOtherJointDiseasesPresent] = useState(false);
   const [otherJointDiseases, setOtherJointDiseases] = useState('');
   const [previousInjury, setPreviousInjury] = useState(false);
   const [injuryDetails, setInjuryDetails] = useState('');
@@ -96,6 +98,11 @@ function App() {
   const [xrayPreviewUrl, setXrayPreviewUrl] = useState('');
   const [eagFileName, setEagFileName] = useState('');
   const [gaitFileName, setGaitFileName] = useState('');
+  const [xrayStatus, setXrayStatus] = useState<UploadStatus>('not-uploaded');
+  const [eagStatus, setEagStatus] = useState<UploadStatus>('not-uploaded');
+  const [gaitStatus, setGaitStatus] = useState<UploadStatus>('not-uploaded');
+  const [eagSamples, setEagSamples] = useState<number[]>([]);
+  const [uploadError, setUploadError] = useState('');
 
   useEffect(() => {
     localStorage.setItem(DRAFT_KEY, JSON.stringify(form));
@@ -110,6 +117,7 @@ function App() {
       painLevel: 0,
       treatmentUndergoing: false,
       treatmentDetails: '',
+      otherJointDiseasesPresent: false,
       otherJointDiseases: '',
       previousInjury: false,
       injuryDetails: '',
@@ -119,6 +127,22 @@ function App() {
       createdAt: new Date().toISOString(),
     });
   }, [form]);
+
+  useEffect(() => {
+    if (!savedPatient || historySaved) return;
+    void savePatient({
+      ...savedPatient,
+      medicalHistory: medicalHistory.trim(),
+      jointPain,
+      painLevel: jointPain ? painLevel : 0,
+      treatmentUndergoing,
+      treatmentDetails: treatmentUndergoing ? treatmentDetails.trim() : '',
+      otherJointDiseasesPresent,
+      otherJointDiseases: otherJointDiseasesPresent ? otherJointDiseases.trim() : '',
+      previousInjury,
+      injuryDetails: previousInjury ? injuryDetails.trim() : '',
+    });
+  }, [savedPatient, historySaved, medicalHistory, jointPain, painLevel, treatmentUndergoing, treatmentDetails, otherJointDiseasesPresent, otherJointDiseases, previousInjury, injuryDetails]);
 
   useEffect(() => {
     const updateNetworkStatus = () => setNetworkStatus(navigator.onLine ? 'online' : 'offline');
@@ -169,6 +193,7 @@ function App() {
       painLevel: 0,
       treatmentUndergoing: false,
       treatmentDetails: '',
+      otherJointDiseasesPresent: false,
       otherJointDiseases: '',
       previousInjury: false,
       injuryDetails: '',
@@ -193,6 +218,9 @@ function App() {
 
   const saveHistory = async () => {
     if (!savedPatient) return;
+    if (treatmentUndergoing && !treatmentDetails.trim()) return setUploadError(t('treatmentDetailsRequired'));
+    if (otherJointDiseasesPresent && !otherJointDiseases.trim()) return setUploadError(t('otherJointDiseasesRequired'));
+    if (previousInjury && !injuryDetails.trim()) return setUploadError(t('injuryDetailsRequired'));
     const patient = {
       ...savedPatient,
       medicalHistory: medicalHistory.trim(),
@@ -200,7 +228,8 @@ function App() {
       painLevel: jointPain ? painLevel : 0,
       treatmentUndergoing,
       treatmentDetails: treatmentDetails.trim(),
-      otherJointDiseases: otherJointDiseases.trim(),
+      otherJointDiseasesPresent,
+      otherJointDiseases: otherJointDiseasesPresent ? otherJointDiseases.trim() : '',
       previousInjury,
       injuryDetails: injuryDetails.trim(),
       syncStatus: 'pending' as const,
@@ -216,6 +245,72 @@ function App() {
     localStorage.setItem(SAVED_PATIENT_KEY, JSON.stringify(patient));
     localStorage.setItem(HISTORY_PAGE_KEY, 'uploads');
     setSavedPatient(patient);
+  };
+
+  const handleXray = async (file: File | undefined) => {
+    if (!file) return;
+    setUploadError('');
+    if (!file.type.startsWith('image/') || file.size > 10 * 1024 * 1024) {
+      setXrayStatus('failed');
+      setUploadError(t('xrayValidationError'));
+      return;
+    }
+    try {
+      await createImageBitmap(file);
+      setXrayFileName(file.name);
+      setXrayPreviewUrl(URL.createObjectURL(file));
+      setXrayStatus('uploaded');
+    } catch {
+      setXrayStatus('failed');
+      setUploadError(t('xrayValidationError'));
+    }
+  };
+
+  const handleEag = async (file: File | undefined) => {
+    if (!file) return;
+    setUploadError('');
+    if (!/\.(csv|txt)$/i.test(file.name) || file.size > 10 * 1024 * 1024) {
+      setEagStatus('failed');
+      setUploadError(t('eagValidationError'));
+      return;
+    }
+    const values = (await file.text()).split(/[\s,;]+/).map(Number).filter(Number.isFinite);
+    if (values.length < 2) {
+      setEagStatus('failed');
+      setUploadError(t('eagValidationError'));
+      return;
+    }
+    setEagFileName(file.name);
+    setEagSamples(values.slice(0, 500));
+    setEagStatus('uploaded');
+  };
+
+  const handleGait = (file: File | undefined) => {
+    if (!file) return;
+    setUploadError('');
+    if (!file.type.startsWith('video/') || file.size > 100 * 1024 * 1024) {
+      setGaitStatus('failed');
+      setUploadError(t('gaitValidationError'));
+      return;
+    }
+    const url = URL.createObjectURL(file);
+    const video = document.createElement('video');
+    video.onloadedmetadata = () => {
+      URL.revokeObjectURL(url);
+      if (video.duration < 10 || video.duration > 30) {
+        setGaitStatus('failed');
+        setUploadError(t('gaitValidationError'));
+        return;
+      }
+      setGaitFileName(file.name);
+      setGaitStatus('uploaded');
+    };
+    video.onerror = () => {
+      URL.revokeObjectURL(url);
+      setGaitStatus('failed');
+      setUploadError(t('gaitValidationError'));
+    };
+    video.src = url;
   };
 
   const header = (
@@ -243,33 +338,36 @@ function App() {
                   <h2>{t('uploadPageTitle')}</h2>
                   <p>{t('uploadPageIntro')}</p>
                 </div>
+                {uploadError && <div className="message error">{uploadError}</div>}
 
                 <label className="upload-box">
                   <span>{t('uploadXray')}</span>
-                  <input type="file" accept="image/*" onChange={(event) => {
-                    const file = event.target.files?.[0];
-                    setXrayFileName(file?.name ?? '');
-                    setXrayPreviewUrl(file ? URL.createObjectURL(file) : '');
-                  }} />
+                  <input type="file" accept="image/*" capture="environment" onChange={(event) => void handleXray(event.target.files?.[0])} />
                 </label>
-                {xrayFileName && <div className="file-readout">{xrayFileName}</div>}
+                <div className={`upload-status ${xrayStatus}`}>{t(xrayStatus)}</div>
+                {xrayFileName && <div className="file-readout">{xrayFileName} <button type="button" className="text-button" onClick={() => { setXrayFileName(''); setXrayPreviewUrl(''); setXrayStatus('not-uploaded'); }}>{t('removeReplace')}</button></div>}
                 {xrayPreviewUrl && <div className="preview-wrap"><img src={xrayPreviewUrl} alt={t('xrayPreviewAlt')} /></div>}
 
                 <label className="upload-box">
                   <span>{t('uploadEag')}</span>
-                  <input type="file" accept=".csv,.txt,.xlsx,.xls,.json,.dat" onChange={(event) => setEagFileName(event.target.files?.[0]?.name ?? '')} />
+                  <input type="file" accept=".csv,.txt,text/csv,text/plain" onChange={(event) => void handleEag(event.target.files?.[0])} />
                 </label>
-                {eagFileName && <div className="file-readout">{eagFileName}</div>}
+                <div className={`upload-status ${eagStatus}`}>{t(eagStatus)}</div>
+                {eagFileName && <div className="file-readout">{eagFileName} <button type="button" className="text-button" onClick={() => { setEagFileName(''); setEagSamples([]); setEagStatus('not-uploaded'); }}>{t('removeReplace')}</button></div>}
+                {eagSamples.length > 1 && <svg className="waveform-preview" viewBox="0 0 500 100" role="img" aria-label={t('eagPreviewAlt')}><polyline points={eagSamples.map((value, index) => `${(index / (eagSamples.length - 1)) * 500},${50 - (value / Math.max(...eagSamples.map(Math.abs), 1)) * 45}`).join(' ')} /></svg>}
 
                 <label className="upload-box">
                   <span>{t('uploadGait')}</span>
-                  <input type="file" accept="video/*" onChange={(event) => setGaitFileName(event.target.files?.[0]?.name ?? '')} />
+                  <input type="file" accept="video/*" capture="environment" onChange={(event) => handleGait(event.target.files?.[0])} />
                 </label>
-                {gaitFileName && <div className="file-readout">{gaitFileName}</div>}
+                <small>{t('gaitGuidance')}</small>
+                <div className={`upload-status ${gaitStatus}`}>{t(gaitStatus)}</div>
+                {gaitFileName && <div className="file-readout">{gaitFileName} <button type="button" className="text-button" onClick={() => { setGaitFileName(''); setGaitStatus('not-uploaded'); }}>{t('removeReplace')}</button></div>}
 
                 <div className="next-step-box">
                   <p>{t('filesSavedOnDevice')}</p>
                 </div>
+                <button className="primary-button" type="button" disabled={!xrayFileName && !eagFileName && !gaitFileName}>{t('continueWithFiles')}</button>
               </>
             ) : (
               <>
@@ -310,8 +408,12 @@ function App() {
 
             <label className="field">
               <span>{t('otherJointDiseasesLabel')}</span>
-              <textarea value={otherJointDiseases} onChange={(event) => setOtherJointDiseases(event.target.value)} rows={3} placeholder={t('otherJointDiseasesPlaceholder')} />
+              <div className="choice-row">
+                <label className="checkbox-row"><input type="radio" name="otherJointDiseases" checked={otherJointDiseasesPresent} onChange={() => setOtherJointDiseasesPresent(true)} /> {t('yes')}</label>
+                <label className="checkbox-row"><input type="radio" name="otherJointDiseases" checked={!otherJointDiseasesPresent} onChange={() => { setOtherJointDiseasesPresent(false); setOtherJointDiseases(''); }} /> {t('no')}</label>
+              </div>
             </label>
+            {otherJointDiseasesPresent && <label className="field"><span>{t('otherJointDiseasesDetailsLabel')}</span><textarea value={otherJointDiseases} onChange={(event) => setOtherJointDiseases(event.target.value)} rows={3} placeholder={t('otherJointDiseasesPlaceholder')} /></label>}
 
             <label className="field">
               <span>{t('medicalHistoryLabel')}</span>
@@ -330,7 +432,8 @@ function App() {
               </label>
             )}
 
-            <button className="primary-button" type="button" onClick={() => void saveHistory()}>{t('saveAndContinue')}</button>
+            {uploadError && <div className="message error">{uploadError}</div>}
+            <button className="primary-button" type="button" onClick={() => void saveHistory()}>{t('next')}</button>
             <div className="next-step-box">
               <p>{t('savedOnDevice')}</p>
             </div>
