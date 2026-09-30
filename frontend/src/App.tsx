@@ -18,6 +18,7 @@ type PatientForm = {
 const DRAFT_KEY = 'oa-patient-draft-v1';
 const SAVED_PATIENT_KEY = 'oa-saved-patient-v1';
 const HISTORY_PAGE_KEY = 'oa-history-page-v1';
+const LOGIN_KEY = 'oa-worker-login-v1';
 const languageOptions: Array<{ value: PatientLanguage; labelKey: string }> = [
   { value: 'en', labelKey: 'languageEnglish' },
   { value: 'hi', labelKey: 'languageHindi' },
@@ -83,6 +84,9 @@ function App() {
   const [pendingSyncCount, setPendingSyncCount] = useState(0);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [savedPatient, setSavedPatient] = useState<Patient | null>(readSavedPatient);
+  const [workerId, setWorkerId] = useState(() => localStorage.getItem('oa-user-id') ?? '');
+  const [isLoggedIn, setIsLoggedIn] = useState(() => localStorage.getItem(LOGIN_KEY) === 'true');
+  const [loginError, setLoginError] = useState('');
   const [medicalHistory, setMedicalHistory] = useState('');
   const [jointPain, setJointPain] = useState(false);
   const [painLevel, setPainLevel] = useState(0);
@@ -93,6 +97,7 @@ function App() {
   const [injuryDetails, setInjuryDetails] = useState('');
   const [historySaved, setHistorySaved] = useState(() => localStorage.getItem(HISTORY_PAGE_KEY) === 'uploads');
   const [xrayFileName, setXrayFileName] = useState('');
+  const [xrayPreviewUrl, setXrayPreviewUrl] = useState('');
   const [eagFileName, setEagFileName] = useState('');
   const [gaitFileName, setGaitFileName] = useState('');
 
@@ -134,6 +139,17 @@ function App() {
   const changeAppLanguage = (language: string) => {
     localStorage.setItem('oa-language', language);
     void i18n.changeLanguage(language);
+  };
+
+  const handleLogin = () => {
+    if (!workerId.trim()) {
+      setLoginError(t('workerIdRequired'));
+      return;
+    }
+    localStorage.setItem('oa-user-id', workerId.trim());
+    localStorage.setItem(LOGIN_KEY, 'true');
+    setLoginError('');
+    setIsLoggedIn(true);
   };
 
   const updateForm = (changes: Partial<PatientForm>) => {
@@ -230,6 +246,29 @@ function App() {
     </header>
   );
 
+  if (!isLoggedIn) {
+    return (
+      <div className="app-shell">
+        {header}
+        <main className="layout">
+          <section className="screen stack">
+            <div className="instruction-box">
+              <h2>{t('workerLoginTitle')}</h2>
+              <p>{t('workerLoginIntro')}</p>
+            </div>
+            <label className="field">
+              <span>{t('workerIdLabel')}</span>
+              <input value={workerId} onChange={(event) => { setWorkerId(event.target.value); setLoginError(''); }} autoComplete="username" />
+              {loginError && <small className="field-error">{loginError}</small>}
+            </label>
+            <button className="primary-button" type="button" onClick={handleLogin}>{t('loginAndContinue')}</button>
+            <p className="screen-footer">{t('screeningAidOnly')}</p>
+          </section>
+        </main>
+      </div>
+    );
+  }
+
   if (savedPatient) {
     return (
       <div className="app-shell">
@@ -245,9 +284,14 @@ function App() {
 
                 <label className="upload-box">
                   <span>{t('uploadXray')}</span>
-                  <input type="file" accept="image/*" onChange={(event) => setXrayFileName(event.target.files?.[0]?.name ?? '')} />
+                  <input type="file" accept="image/*" onChange={(event) => {
+                    const file = event.target.files?.[0];
+                    setXrayFileName(file?.name ?? '');
+                    setXrayPreviewUrl(file ? URL.createObjectURL(file) : '');
+                  }} />
                 </label>
                 {xrayFileName && <div className="file-readout">{xrayFileName}</div>}
+                {xrayPreviewUrl && <div className="preview-wrap"><img src={xrayPreviewUrl} alt={t('xrayPreviewAlt')} /></div>}
 
                 <label className="upload-box">
                   <span>{t('uploadEag')}</span>
@@ -330,7 +374,7 @@ function App() {
             </div>
               </>
             )}
-            <button className="primary-button" type="button" onClick={() => { localStorage.removeItem(SAVED_PATIENT_KEY); localStorage.removeItem(HISTORY_PAGE_KEY); setForm(emptyForm()); setSavedPatient(null); setHistorySaved(false); }}>
+            <button className="primary-button" type="button" onClick={() => { localStorage.removeItem(SAVED_PATIENT_KEY); localStorage.removeItem(HISTORY_PAGE_KEY); setForm(emptyForm()); setSavedPatient(null); setHistorySaved(false); setXrayFileName(''); setXrayPreviewUrl(''); }}>
               {t('addAnotherPatient')}
             </button>
             <small className="screen-footer">{t('screeningAidOnly')}</small>
