@@ -280,6 +280,7 @@ function App() {
       const result = await predictXray(xrayFile);
       const confidence = Number(result.probabilities[String(result.predicted_class)] ?? 0);
       setPrediction({ severity: result.severity || result.grade_labels[String(result.predicted_class)], confidence });
+      setShowPredictionResults(true);
     } catch {
       setUploadError(t('predictionUnavailable'));
     } finally {
@@ -387,7 +388,6 @@ function App() {
                 {xrayFileName && <div className="file-readout">{xrayFileName} <button type="button" className="text-button" onClick={() => { setXrayFileName(''); setXrayFile(null); setXrayPreviewUrl(''); setXrayStatus('not-uploaded'); setPrediction(null); }}>{t('removeReplace')}</button></div>}
                 {xrayPreviewUrl && <div className="preview-wrap"><img src={xrayPreviewUrl} alt={t('xrayPreviewAlt')} /></div>}
                 <button className="primary-button" type="button" onClick={() => void predictOaRisk()} disabled={!xrayFile || isPredicting}>{isPredicting ? t('predicting') : t('predictOaRisk')}</button>
-                {prediction && <button className="primary-button" type="button" onClick={() => setShowPredictionResults(true)}>{t('viewPredictionResults')}</button>}
 
                 <label className="upload-box">
                   <span>{t('uploadEag')}</span>
