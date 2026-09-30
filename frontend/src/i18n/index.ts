@@ -1,0 +1,61 @@
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+
+const savedLanguage = localStorage.getItem('oa-language') ?? 'en';
+
+const resources = {
+  en: {
+    translation: {
+      appName: 'OA Screening Aid',
+      login: 'Login',
+      dashboard: 'Dashboard',
+      newPatient: 'New patient',
+      consent: 'Consent',
+      patientName: 'Patient name',
+      age: 'Age',
+      savePatient: 'Save patient',
+      assessment: 'Assessment',
+      xray: 'X-ray',
+      signal: 'Signal',
+      video: 'Video',
+      questionnaire: 'Questionnaire',
+      screeningAidOnly: 'Screening aid only. Not a medical diagnosis.',
+      lowConfidence: 'Low confidence, please consult a doctor.',
+      noOA: 'No OA',
+      doubtful: 'Doubtful',
+      mild: 'Mild',
+      offline: 'Offline',
+      online: 'Online',
+      syncing: 'Syncing',
+      uploadImage: 'Upload X-ray image',
+      chooseImage: 'Choose image',
+      predict: 'Predict severity',
+      history: 'History',
+      result: 'Result',
+      confidence: 'Confidence',
+      demoReplay: 'Demo replay',
+      movementIndicators: 'Movement pattern indicators only. Not validated as a standalone OA detector.',
+      patientHistory: 'Patient history',
+      uploadConsent: 'I confirm patient consent for screening.',
+      saveAndContinue: 'Save and continue',
+      networkStatus: 'Network status',
+      screeningOnly: 'Screening aid only',
+      reportPreview: 'Report preview',
+    },
+  },
+  hi: { translation: { appName: 'OA स्क्रीनिंग एड', login: 'लॉगिन', dashboard: 'डैशबोर्ड', newPatient: 'नया रोगी', consent: 'सहमति', patientName: 'रोगी का नाम', age: 'उम्र', savePatient: 'रोगी सहेजें', assessment: 'मूल्यांकन', xray: 'एक्स-रे', signal: 'सिग्नल', video: 'वीडियो', questionnaire: 'प्रश्नावली', screeningAidOnly: 'स्क्रीनिंग सहायक केवल है। यह चिकित्सकीय निदान नहीं है।', lowConfidence: 'कम विश्वास, कृपया डॉक्टर से परामर्श लें।', noOA: 'कोई OA नहीं', doubtful: 'संदिग्ध', mild: 'हल्का', offline: 'ऑफलाइन', online: 'ऑनलाइन', syncing: 'सिंक हो रहा है', uploadImage: 'एक्स-रे अपलोड करें', chooseImage: 'चित्र चुनें', predict: 'गंभीरता का अनुमान लगाएँ', history: 'इतिहास', result: 'परिणाम', confidence: 'विश्वास', demoReplay: 'डेमो रिप्ले', movementIndicators: 'गति संकेत केवल संकेत हैं। एक स्वतंत्र OA डिटेक्टर के रूप में मान्य नहीं है।', patientHistory: 'रोगी इतिहास', uploadConsent: 'मैं स्क्रीनिंग के लिए रोगी की सहमति की पुष्टि करता हूँ।', saveAndContinue: 'सहेजें और जारी रखें', networkStatus: 'नेटवर्क स्थिति', screeningOnly: 'स्क्रीनिंग सहायक', reportPreview: 'रिपोर्ट पूर्वावलोकन' } },
+  as: { translation: { appName: 'OA স্ক্ৰীনিং এড', login: 'লগইন', dashboard: 'ডেশ্বব' , newPatient: 'নতুন রোগী', consent: 'সম্মতি', patientName: 'বিষয়ী নাম', age: 'বয়স', savePatient: 'রোগী সঞ্চয়', assessment: 'মূল্যায়ন', xray: 'এক্স-ৰে', signal: 'চিহ্ন', video: 'ভিডিঅ', questionnaire: 'প্রশ্নাবলী', screeningAidOnly: 'স্ক্ৰীনিং সহায়ক মাত্র। চিকিৎসা নির্ণয় নহয়।', lowConfidence: 'কম আত্মবিশ্বাস, অনুগ্ৰহ কৰি চিকিৎসকৰ সাথে পৰামৰ্শ কৰক।', noOA: 'OA নাই', doubtful: 'সন্দেহ', mild: 'হালকা', offline: 'অফলাইন', online: 'অনলাইন', syncing: 'সিঙ্ক হৈ আছে', uploadImage: 'এক্স-রে আপলোড', chooseImage: 'ছবি বাছনি', predict: 'গুরুত্ব নির্ণয়', history: 'ইতিহাস', result: 'ফলাফল', confidence: 'আত্মবিশ্বাস', demoReplay: 'ডেমো রিপ্লে', movementIndicators: 'গতি সূচক কেবল নির্দেশ। স্বাধীন OA ডিটেক্টৰ হিচাপে বৈধ নহয়।', patientHistory: 'বিষয়ী ইতিহাস', uploadConsent: 'আমি স্ক্ৰীনিং বাবদ রোগীৰ সম্মতি নিশ্চিত কৰিছো।', saveAndContinue: 'সংৰক্ষণ কৰি আগবাঢ়ক', networkStatus: 'নেটৱৰ্ক অবস্থা', screeningOnly: 'স্ক্ৰীনিং সহায়ক', reportPreview: 'ৰিপোৰ্ট প্ৰিভিউ' } },
+  mni: { translation: { appName: 'OA Screening Aid', login: 'Login', dashboard: 'Dashboard', newPatient: 'New patient', consent: 'Consent', patientName: 'Patient name', age: 'Age', savePatient: 'Save patient', assessment: 'Assessment', xray: 'X-ray', signal: 'Signal', video: 'Video', questionnaire: 'Questionnaire', screeningAidOnly: 'Screening aid only. Not a medical diagnosis.', lowConfidence: 'Low confidence, please consult a doctor.', noOA: 'No OA', doubtful: 'Doubtful', mild: 'Mild', offline: 'Offline', online: 'Online', syncing: 'Syncing', uploadImage: 'Upload X-ray image', chooseImage: 'Choose image', predict: 'Predict severity', history: 'History', result: 'Result', confidence: 'Confidence', demoReplay: 'Demo replay', movementIndicators: 'Movement pattern indicators only. Not validated as a standalone OA detector.', patientHistory: 'Patient history', uploadConsent: 'I confirm patient consent for screening.', saveAndContinue: 'Save and continue', networkStatus: 'Network status', screeningOnly: 'Screening aid only', reportPreview: 'Report preview' } },
+  lus: { translation: { appName: 'OA Screening Aid', login: 'Login', dashboard: 'Dashboard', newPatient: 'New patient', consent: 'Consent', patientName: 'Patient name', age: 'Age', savePatient: 'Save patient', assessment: 'Assessment', xray: 'X-ray', signal: 'Signal', video: 'Video', questionnaire: 'Questionnaire', screeningAidOnly: 'Screening aid only. Not a medical diagnosis.', lowConfidence: 'Low confidence, please consult a doctor.', noOA: 'No OA', doubtful: 'Doubtful', mild: 'Mild', offline: 'Offline', online: 'Online', syncing: 'Syncing', uploadImage: 'Upload X-ray image', chooseImage: 'Choose image', predict: 'Predict severity', history: 'History', result: 'Result', confidence: 'Confidence', demoReplay: 'Demo replay', movementIndicators: 'Movement pattern indicators only. Not validated as a standalone OA detector.', patientHistory: 'Patient history', uploadConsent: 'I confirm patient consent for screening.', saveAndContinue: 'Save and continue', networkStatus: 'Network status', screeningOnly: 'Screening aid only', reportPreview: 'Report preview' } },
+  adi: { translation: { appName: 'OA Screening Aid', login: 'Login', dashboard: 'Dashboard', newPatient: 'New patient', consent: 'Consent', patientName: 'Patient name', age: 'Age', savePatient: 'Save patient', assessment: 'Assessment', xray: 'X-ray', signal: 'Signal', video: 'Video', questionnaire: 'Questionnaire', screeningAidOnly: 'Screening aid only. Not a medical diagnosis.', lowConfidence: 'Low confidence, please consult a doctor.', noOA: 'No OA', doubtful: 'Doubtful', mild: 'Mild', offline: 'Offline', online: 'Online', syncing: 'Syncing', uploadImage: 'Upload X-ray image', chooseImage: 'Choose image', predict: 'Predict severity', history: 'History', result: 'Result', confidence: 'Confidence', demoReplay: 'Demo replay', movementIndicators: 'Movement pattern indicators only. Not validated as a standalone OA detector.', patientHistory: 'Patient history', uploadConsent: 'I confirm patient consent for screening.', saveAndContinue: 'Save and continue', networkStatus: 'Network status', screeningOnly: 'Screening aid only', reportPreview: 'Report preview' } },
+};
+
+i18n.use(initReactI18next).init({
+  resources,
+  lng: savedLanguage,
+  fallbackLng: 'en',
+  interpolation: { escapeValue: false },
+  supportedLngs: ['en', 'hi', 'as', 'mni', 'lus', 'adi'],
+});
+
+export default i18n;

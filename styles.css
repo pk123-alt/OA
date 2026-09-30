@@ -1,0 +1,256 @@
+:root {
+  --bg: #f3f7fb;
+  --panel: #ffffff;
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+  --text: #1f2937;
+  --muted: #6b7280;
+  --border: #dfe7f1;
+  --success: #16a34a;
+  --warning: #f59e0b;
+  --danger: #dc2626;
+  --shadow: 0 12px 30px rgba(37, 99, 235, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: linear-gradient(135deg, #edf5ff, #f8fbff 60%, #eef6f7);
+  color: var(--text);
+}
+
+.container {
+  max-width: 1100px;
+  margin: 40px auto;
+  padding: 24px;
+}
+
+.header {
+  margin-bottom: 24px;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(2rem, 3vw, 3rem);
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.upload-section {
+  padding: 28px;
+  border-bottom: 1px solid var(--border);
+}
+
+.upload-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+}
+
+.upload-box {
+  flex: 1;
+  min-width: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 68px;
+  border: 2px dashed var(--border);
+  border-radius: 14px;
+  background: #f8fbff;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.upload-box:hover {
+  border-color: var(--primary);
+  background: #eef5ff;
+}
+
+.upload-box input {
+  display: none;
+}
+
+.upload-text {
+  font-size: 1rem;
+  color: var(--text);
+  font-weight: 600;
+}
+
+button {
+  border: none;
+  background: var(--primary);
+  color: #fff;
+  border-radius: 12px;
+  padding: 16px 28px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+button:hover {
+  background: var(--primary-dark);
+}
+
+.status {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.status.success {
+  background: rgba(22, 163, 74, 0.1);
+  color: var(--success);
+}
+
+.status.error {
+  background: rgba(220, 38, 38, 0.08);
+  color: var(--danger);
+}
+
+.hidden {
+  display: none;
+}
+
+.result-section {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 28px;
+  padding: 28px;
+}
+
+.image-preview-box {
+  min-height: 300px;
+  border: 1px solid var(--border);
+  background: #fbfdff;
+  border-radius: 18px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#previewImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.placeholder {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.result-card {
+  background: #f8fbff;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 24px;
+}
+
+.result-card h2 {
+  margin-top: 0;
+  margin-bottom: 18px;
+}
+
+.result-main {
+  margin-bottom: 18px;
+  padding: 18px 16px;
+  background: #eaf2ff;
+  border-radius: 12px;
+  border: 1px solid #cfe1ff;
+}
+
+#severityLabel {
+  display: inline-block;
+  font-size: clamp(1.5rem, 2.5vw, 2.3rem);
+  font-weight: 800;
+  color: var(--primary-dark);
+}
+
+.probability-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.probability-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-weight: 600;
+  color: var(--text);
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.probability-label {
+  flex: 1;
+}
+
+.probability-bar {
+  flex: 2;
+  height: 10px;
+  background: #e5edf9;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.probability-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #60a5fa, var(--primary));
+  border-radius: 999px;
+}
+
+.probability-value {
+  min-width: 56px;
+  text-align: right;
+  color: var(--muted);
+}
+
+.empty {
+  justify-content: center;
+  color: var(--muted);
+  padding: 18px;
+}
+
+@media (max-width: 760px) {
+  .result-section {
+    grid-template-columns: 1fr;
+  }
+
+  .upload-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  button {
+    width: 100%;
+  }
+}

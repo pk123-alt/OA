@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="OA Screening Aid icon">
+  <rect width="256" height="256" rx="42" fill="#0f766e"/>
+  <path d="M64 178V78c0-10 8-18 18-18h42c10 0 18 8 18 18v100H64zm50-14h20v-24H114v24zm-20-52h52v-36H94v36zm98 66v-44h-20V70h32c10 0 18 8 18 18v72c0 10-8 18-18 18h-12z" fill="#ecfeff"/>
+  <circle cx="184" cy="98" r="18" fill="#a7f3d0"/>
+</svg>
