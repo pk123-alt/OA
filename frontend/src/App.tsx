@@ -367,10 +367,11 @@ function App() {
               <button className="icon-button small" type="button" onClick={() => speakText('Upload the patient case files, including the X-ray, gait video, and EAG signal data.')}>🔊 Listen</button>
             </div>
 
-            {xrayAvailable === false ? (
-              <div className="not-available-box">X-ray service is not available yet. Please save this work and try again later.</div>
-            ) : (
-              <>
+            {xrayAvailable === false && (
+              <div className="not-available-box">X-ray prediction is offline. You can still select and preview the image, then try the check again when the service is available.</div>
+            )}
+
+            <>
                 <label className="upload-box">
                   <span>Choose X-ray image</span>
                   <input type="file" accept="image/*" onChange={(event) => {
@@ -454,8 +455,7 @@ function App() {
                 <button className="primary-button" type="button" onClick={handlePrediction} disabled={isBusy}>
                   {isBusy ? busyMessage || 'Checking X-ray...' : '✓ Check X-ray'}
                 </button>
-              </>
-            )}
+            </>
 
             {busyMessage && <div className="message info">{busyMessage}</div>}
           </div>
