@@ -16,6 +16,8 @@ type PatientForm = {
 };
 
 const DRAFT_KEY = 'oa-patient-draft-v1';
+const SAVED_PATIENT_KEY = 'oa-saved-patient-v1';
+const HISTORY_PAGE_KEY = 'oa-history-page-v1';
 const languageOptions: Array<{ value: PatientLanguage; labelKey: string }> = [
   { value: 'en', labelKey: 'languageEnglish' },
   { value: 'hi', labelKey: 'languageHindi' },
@@ -46,6 +48,15 @@ function getWorkerUserId() {
   return localStorage.getItem('oa-user-id') ?? localStorage.getItem('userId') ?? localStorage.getItem('user_id') ?? 'local-worker';
 }
 
+function readSavedPatient(): Patient | null {
+  try {
+    const saved = localStorage.getItem(SAVED_PATIENT_KEY);
+    return saved ? JSON.parse(saved) as Patient : null;
+  } catch {
+    return null;
+  }
+}
+
 function normalizePhone(value: string) {
   const digits = value.replace(/\D/g, '');
   return digits.startsWith('91') && digits.length === 12 ? digits.slice(2) : digits;
@@ -71,7 +82,7 @@ function App() {
   const [networkStatus, setNetworkStatus] = useState<NetworkStatus>('online');
   const [pendingSyncCount, setPendingSyncCount] = useState(0);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [savedPatient, setSavedPatient] = useState<Patient | null>(null);
+  const [savedPatient, setSavedPatient] = useState<Patient | null>(readSavedPatient);
   const [medicalHistory, setMedicalHistory] = useState('');
   const [jointPain, setJointPain] = useState(false);
   const [painLevel, setPainLevel] = useState(0);
@@ -80,7 +91,7 @@ function App() {
   const [otherJointDiseases, setOtherJointDiseases] = useState('');
   const [previousInjury, setPreviousInjury] = useState(false);
   const [injuryDetails, setInjuryDetails] = useState('');
-  const [historySaved, setHistorySaved] = useState(false);
+  const [historySaved, setHistorySaved] = useState(() => localStorage.getItem(HISTORY_PAGE_KEY) === 'uploads');
   const [xrayFileName, setXrayFileName] = useState('');
   const [eagFileName, setEagFileName] = useState('');
   const [gaitFileName, setGaitFileName] = useState('');
@@ -174,6 +185,7 @@ function App() {
       createdAt: patient.createdAt,
     });
     setPendingSyncCount((current) => current + 1);
+    localStorage.setItem(SAVED_PATIENT_KEY, JSON.stringify(patient));
     setSavedPatient(patient);
     setHistorySaved(true);
   };
@@ -200,6 +212,8 @@ function App() {
       createdAt: new Date().toISOString(),
     });
     setPendingSyncCount((current) => current + 1);
+    localStorage.setItem(SAVED_PATIENT_KEY, JSON.stringify(patient));
+    localStorage.setItem(HISTORY_PAGE_KEY, 'uploads');
     setSavedPatient(patient);
   };
 
@@ -316,7 +330,7 @@ function App() {
             </div>
               </>
             )}
-            <button className="primary-button" type="button" onClick={() => { setForm(emptyForm()); setSavedPatient(null); }}>
+            <button className="primary-button" type="button" onClick={() => { localStorage.removeItem(SAVED_PATIENT_KEY); localStorage.removeItem(HISTORY_PAGE_KEY); setForm(emptyForm()); setSavedPatient(null); setHistorySaved(false); }}>
               {t('addAnotherPatient')}
             </button>
             <small className="screen-footer">{t('screeningAidOnly')}</small>
