@@ -34,6 +34,8 @@ jobs:
 
       - name: Build app
         working-directory: frontend
+        env:
+          VITE_API_BASE_URL: https://oa-va0z.onrender.com
         run: npm run build
 
       - name: Upload artifact
