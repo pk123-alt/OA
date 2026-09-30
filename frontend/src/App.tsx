@@ -72,6 +72,9 @@ function App() {
   const [pendingSyncCount, setPendingSyncCount] = useState(0);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [savedPatient, setSavedPatient] = useState<Patient | null>(null);
+  const [medicalHistory, setMedicalHistory] = useState('');
+  const [previousInjury, setPreviousInjury] = useState(false);
+  const [injuryDetails, setInjuryDetails] = useState('');
 
   useEffect(() => {
     localStorage.setItem(DRAFT_KEY, JSON.stringify(form));
@@ -81,6 +84,9 @@ function App() {
       phone: normalizePhone(form.phone),
       language: form.language,
       age: Number(form.age) || 0,
+      medicalHistory: '',
+      previousInjury: false,
+      injuryDetails: '',
       consent: false,
       workerUserId: getWorkerUserId(),
       syncStatus: 'pending',
@@ -132,6 +138,9 @@ function App() {
       phone: normalizePhone(form.phone),
       language: form.language,
       age: Number(form.age),
+      medicalHistory: '',
+      previousInjury: false,
+      injuryDetails: '',
       consent: false,
       workerUserId: getWorkerUserId(),
       syncStatus: 'pending',
@@ -144,6 +153,26 @@ function App() {
       recordId: patient.id,
       payload: patient,
       createdAt: patient.createdAt,
+    });
+    setPendingSyncCount((current) => current + 1);
+    setSavedPatient(patient);
+  };
+
+  const saveHistory = async () => {
+    if (!savedPatient) return;
+    const patient = {
+      ...savedPatient,
+      medicalHistory: medicalHistory.trim(),
+      previousInjury,
+      injuryDetails: injuryDetails.trim(),
+      syncStatus: 'pending' as const,
+    };
+    await savePatient(patient);
+    await enqueueSync({
+      recordType: 'patient',
+      recordId: patient.id,
+      payload: patient,
+      createdAt: new Date().toISOString(),
     });
     setPendingSyncCount((current) => current + 1);
     setSavedPatient(patient);
@@ -169,12 +198,30 @@ function App() {
         <main className="layout">
           <section className="screen stack">
             <div className="instruction-box">
-              <h2>{t('patientSavedLocally')}</h2>
-              <p>{t('syncNotConnected')}</p>
+              <h2>{t('medicalHistoryTitle')}</h2>
+              <p>{t('medicalHistoryIntro')}</p>
             </div>
+
+            <label className="field">
+              <span>{t('medicalHistoryLabel')}</span>
+              <textarea value={medicalHistory} onChange={(event) => setMedicalHistory(event.target.value)} rows={4} placeholder={t('medicalHistoryPlaceholder')} />
+            </label>
+
+            <label className="checkbox-row">
+              <input type="checkbox" checked={previousInjury} onChange={(event) => setPreviousInjury(event.target.checked)} />
+              <span>{t('previousInjuryLabel')}</span>
+            </label>
+
+            {previousInjury && (
+              <label className="field">
+                <span>{t('injuryDetailsLabel')}</span>
+                <textarea value={injuryDetails} onChange={(event) => setInjuryDetails(event.target.value)} rows={4} placeholder={t('injuryDetailsPlaceholder')} />
+              </label>
+            )}
+
+            <button className="primary-button" type="button" onClick={() => void saveHistory()}>{t('saveAndContinue')}</button>
             <div className="next-step-box">
-              <h3>{t('consentMedicalHistory')}</h3>
-              <p>{t('nextStepPlaceholder')}</p>
+              <p>{t('syncNotConnected')}</p>
             </div>
             <button className="primary-button" type="button" onClick={() => { setForm(emptyForm()); setSavedPatient(null); }}>
               {t('addAnotherPatient')}

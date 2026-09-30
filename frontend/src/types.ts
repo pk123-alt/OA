@@ -6,6 +6,9 @@ export type Patient = {
   phone: string;
   language: string;
   age: number;
+  medicalHistory: string;
+  previousInjury: boolean;
+  injuryDetails: string;
   consent: boolean;
   workerUserId: string;
   syncStatus: 'pending' | 'synced' | 'failed';
