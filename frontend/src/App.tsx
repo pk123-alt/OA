@@ -18,7 +18,6 @@ type PatientForm = {
 const DRAFT_KEY = 'oa-patient-draft-v1';
 const SAVED_PATIENT_KEY = 'oa-saved-patient-v1';
 const HISTORY_PAGE_KEY = 'oa-history-page-v1';
-const LOGIN_KEY = 'oa-worker-login-v1';
 const languageOptions: Array<{ value: PatientLanguage; labelKey: string }> = [
   { value: 'en', labelKey: 'languageEnglish' },
   { value: 'hi', labelKey: 'languageHindi' },
@@ -46,7 +45,7 @@ function readDraft(): PatientForm {
 }
 
 function getWorkerUserId() {
-  return localStorage.getItem('oa-user-id') ?? localStorage.getItem('userId') ?? localStorage.getItem('user_id') ?? 'local-worker';
+  return localStorage.getItem('oa-worker-name') ?? localStorage.getItem('userId') ?? localStorage.getItem('user_id') ?? 'local-worker';
 }
 
 function readSavedPatient(): Patient | null {
@@ -84,9 +83,6 @@ function App() {
   const [pendingSyncCount, setPendingSyncCount] = useState(0);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [savedPatient, setSavedPatient] = useState<Patient | null>(readSavedPatient);
-  const [workerId, setWorkerId] = useState(() => localStorage.getItem('oa-user-id') ?? '');
-  const [isLoggedIn, setIsLoggedIn] = useState(() => localStorage.getItem(LOGIN_KEY) === 'true');
-  const [loginError, setLoginError] = useState('');
   const [medicalHistory, setMedicalHistory] = useState('');
   const [jointPain, setJointPain] = useState(false);
   const [painLevel, setPainLevel] = useState(0);
@@ -139,17 +135,6 @@ function App() {
   const changeAppLanguage = (language: string) => {
     localStorage.setItem('oa-language', language);
     void i18n.changeLanguage(language);
-  };
-
-  const handleLogin = () => {
-    if (!workerId.trim()) {
-      setLoginError(t('workerIdRequired'));
-      return;
-    }
-    localStorage.setItem('oa-user-id', workerId.trim());
-    localStorage.setItem(LOGIN_KEY, 'true');
-    setLoginError('');
-    setIsLoggedIn(true);
   };
 
   const updateForm = (changes: Partial<PatientForm>) => {
@@ -245,29 +230,6 @@ function App() {
       </div>
     </header>
   );
-
-  if (!isLoggedIn) {
-    return (
-      <div className="app-shell">
-        {header}
-        <main className="layout">
-          <section className="screen stack">
-            <div className="instruction-box">
-              <h2>{t('workerLoginTitle')}</h2>
-              <p>{t('workerLoginIntro')}</p>
-            </div>
-            <label className="field">
-              <span>{t('workerIdLabel')}</span>
-              <input value={workerId} onChange={(event) => { setWorkerId(event.target.value); setLoginError(''); }} autoComplete="username" />
-              {loginError && <small className="field-error">{loginError}</small>}
-            </label>
-            <button className="primary-button" type="button" onClick={handleLogin}>{t('loginAndContinue')}</button>
-            <p className="screen-footer">{t('screeningAidOnly')}</p>
-          </section>
-        </main>
-      </div>
-    );
-  }
 
   if (savedPatient) {
     return (
