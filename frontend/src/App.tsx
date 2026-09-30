@@ -107,6 +107,7 @@ function App() {
   const [uploadError, setUploadError] = useState('');
   const [prediction, setPrediction] = useState<{ severity: string; confidence: number } | null>(null);
   const [isPredicting, setIsPredicting] = useState(false);
+  const [showPredictionResults, setShowPredictionResults] = useState(false);
 
   useEffect(() => {
     localStorage.setItem(DRAFT_KEY, JSON.stringify(form));
@@ -352,6 +353,24 @@ function App() {
         {header}
         <main className="layout">
           <section className="screen stack">
+            {showPredictionResults && prediction ? (
+              <>
+                <div className="instruction-box">
+                  <h2>{t('predictionResultsTitle')}</h2>
+                  <p>{t('predictionResultsIntro')}</p>
+                </div>
+                <div className="result-card show">
+                  <strong>{prediction.severity}</strong>
+                  <small>{t('riskConfidence', { confidence: (prediction.confidence * 100).toFixed(1) })}</small>
+                </div>
+                <div className="next-step-box">
+                  <h3>{t('whatNextTitle')}</h3>
+                  <p>{prediction.severity === 'Grade 0' ? t('lowerOaRisk') : t('doctorReviewAdvice')}</p>
+                </div>
+                <button className="back-btn" type="button" onClick={() => setShowPredictionResults(false)}>{t('backToUploads')}</button>
+              </>
+            ) : (
+            <>
             {historySaved ? (
               <>
                 <div className="instruction-box">
@@ -368,7 +387,7 @@ function App() {
                 {xrayFileName && <div className="file-readout">{xrayFileName} <button type="button" className="text-button" onClick={() => { setXrayFileName(''); setXrayFile(null); setXrayPreviewUrl(''); setXrayStatus('not-uploaded'); setPrediction(null); }}>{t('removeReplace')}</button></div>}
                 {xrayPreviewUrl && <div className="preview-wrap"><img src={xrayPreviewUrl} alt={t('xrayPreviewAlt')} /></div>}
                 <button className="primary-button" type="button" onClick={() => void predictOaRisk()} disabled={!xrayFile || isPredicting}>{isPredicting ? t('predicting') : t('predictOaRisk')}</button>
-                {prediction && <div className="result-card show"><strong>{prediction.severity}</strong><small>{t('riskConfidence', { confidence: (prediction.confidence * 100).toFixed(1) })}</small><p>{prediction.severity === 'Grade 0' ? t('lowerOaRisk') : t('doctorReviewAdvice')}</p></div>}
+                {prediction && <button className="primary-button" type="button" onClick={() => setShowPredictionResults(true)}>{t('viewPredictionResults')}</button>}
 
                 <label className="upload-box">
                   <span>{t('uploadEag')}</span>
@@ -466,6 +485,8 @@ function App() {
               {t('addAnotherPatient')}
             </button>
             <small className="screen-footer">{t('screeningAidOnly')}</small>
+            </>
+            )}
           </section>
         </main>
       </div>
