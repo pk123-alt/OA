@@ -53,6 +53,7 @@ const resources = {
       patientNameLabel: 'Patient name',
       patientPhoneLabel: 'Patient phone number',
       patientLanguageLabel: 'Patient preferred language',
+      choosePatientLanguage: 'Choose a language',
       patientAgeLabel: 'Patient age',
       patientNameRequired: 'Enter the patient name.',
       phoneError: 'Enter a 10-digit phone number.',

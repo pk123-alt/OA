@@ -208,17 +208,16 @@ function App() {
             {errors.phone && <small className="field-error">{errors.phone}</small>}
           </label>
 
-          <fieldset className="language-field">
-            <legend>{t('patientLanguageLabel')}</legend>
-            <div className="language-grid">
+          <label className="field">
+            <span>{t('patientLanguageLabel')}</span>
+            <select value={form.language} onChange={(event) => updateForm({ language: event.target.value as PatientLanguage })}>
+              <option value="">{t('choosePatientLanguage')}</option>
               {languageOptions.map((option) => (
-                <button className={`language-button ${form.language === option.value ? 'selected' : ''}`} type="button" key={option.value} onClick={() => updateForm({ language: option.value })}>
-                  {t(option.labelKey)}
-                </button>
+                <option value={option.value} key={option.value}>{t(option.labelKey)}</option>
               ))}
-            </div>
+            </select>
             {errors.language && <small className="field-error">{errors.language}</small>}
-          </fieldset>
+          </label>
 
           <label className="field">
             <span>{t('patientAgeLabel')}</span>
