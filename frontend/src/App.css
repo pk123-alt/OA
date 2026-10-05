@@ -38,7 +38,7 @@
   text-transform: uppercase;
   letter-spacing: 0.12em;
   font-size: 0.78rem;
-  color: #0b5d7a;
+  color: #a7e6ff;
   font-weight: 900;
 }
 
@@ -46,7 +46,7 @@ h1 {
   margin: 4px 0 0;
   font-size: clamp(2.2rem, 6vw, 3.2rem);
   line-height: 1.05;
-  color: #0f172a;
+  color: #eaf7ff;
   font-weight: 900;
 }
 
@@ -569,7 +569,7 @@ select {
 }
 
 .result-card small {
-  color: #475569;
+  color: #dfeefc;
 }
 
 .next-step-box {
@@ -586,7 +586,7 @@ select {
   justify-content: space-between;
   gap: 12px;
   margin-top: 18px;
-  color: #334155;
+  color: #dfeefc;
   font-size: 0.8rem;
 }
 
