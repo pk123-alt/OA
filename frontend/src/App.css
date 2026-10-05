@@ -235,6 +235,13 @@ select {
   color: #eaf7ff;
 }
 
+.field label,
+.field legend,
+.choice-field legend,
+.language-field legend {
+  color: #eaf7ff;
+}
+
 .field input,
 .field textarea,
 .upload-box input {
@@ -265,7 +272,7 @@ select {
 
 .language-field legend {
   margin-bottom: 10px;
-  color: #0f172a;
+  color: #eaf7ff;
   font-weight: 900;
 }
 
@@ -300,7 +307,7 @@ select {
 
 .choice-field legend {
   margin-bottom: 10px;
-  color: #0f172a;
+  color: #eaf7ff;
   font-weight: 900;
 }
 
@@ -318,7 +325,7 @@ select {
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #0f172a;
+  color: #eaf7ff;
   font-weight: 900;
 }
 
