@@ -7,7 +7,7 @@ import type { Patient } from './types';
 
 type NetworkStatus = 'online' | 'offline';
 type PatientLanguage = 'en' | 'hi' | 'as' | 'mni' | 'lus' | 'adi';
-type UploadStatus = 'not-uploaded' | 'uploaded' | 'failed';
+type UploadStatus = 'not-uploaded' | 'uploaded' | 'invalid';
 
 type PatientForm = {
   id: string;
@@ -273,7 +273,7 @@ function App() {
     setPrediction(null);
     setShowPredictionResults(false);
     if (!file.type.startsWith('image/') || file.size > 10 * 1024 * 1024) {
-      setXrayStatus('failed');
+      setXrayStatus('invalid');
       setUploadError(t('xrayValidationError'));
       return;
     }
@@ -284,7 +284,7 @@ function App() {
       setXrayPreviewUrl(URL.createObjectURL(file));
       setXrayStatus('uploaded');
     } catch {
-      setXrayStatus('failed');
+      setXrayStatus('invalid');
       setUploadError(t('xrayValidationError'));
     }
   };
@@ -333,13 +333,13 @@ function App() {
     setSignalPrediction(null);
     setShowPredictionResults(false);
     if (!/\.(csv|txt)$/i.test(file.name) || file.size > 10 * 1024 * 1024) {
-      setEagStatus('failed');
+      setEagStatus('invalid');
       setUploadError(t('eagValidationError'));
       return;
     }
     const values = (await file.text()).split(/[\s,;]+/).map(Number).filter(Number.isFinite);
     if (values.length < 2) {
-      setEagStatus('failed');
+      setEagStatus('invalid');
       setUploadError(t('eagValidationError'));
       return;
     }
@@ -354,7 +354,7 @@ function App() {
     if (!file) return;
     setUploadError('');
     if (!file.type.startsWith('video/') || file.size > 100 * 1024 * 1024) {
-      setGaitStatus('failed');
+      setGaitStatus('invalid');
       setUploadError(t('gaitValidationError'));
       return;
     }
@@ -363,7 +363,7 @@ function App() {
     video.onloadedmetadata = () => {
       URL.revokeObjectURL(url);
       if (video.duration < 10 || video.duration > 30) {
-        setGaitStatus('failed');
+        setGaitStatus('invalid');
         setUploadError(t('gaitValidationError'));
         return;
       }
@@ -372,7 +372,7 @@ function App() {
     };
     video.onerror = () => {
       URL.revokeObjectURL(url);
-      setGaitStatus('failed');
+      setGaitStatus('invalid');
       setUploadError(t('gaitValidationError'));
     };
     video.src = url;

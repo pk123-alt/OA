@@ -77,7 +77,7 @@ const resources = {
       filesSavedOnDevice: 'Selected files are saved on this device.',
       'not-uploaded': 'Not uploaded',
       uploaded: 'Uploaded',
-      failed: 'Failed',
+      invalid: 'Invalid',
       removeReplace: 'Remove / replace',
       continueWithFiles: 'Continue with selected files',
       xrayPredictionLabel: 'X-ray prediction',

@@ -427,7 +427,7 @@ select {
 
 .upload-status.not-uploaded { background: #e2e8f0; color: #475569; }
 .upload-status.uploaded { background: #dcfce7; color: #166534; }
-.upload-status.failed { background: #fee2e2; color: #991b1b; }
+.upload-status.invalid { background: #fee2e2; color: #991b1b; }
 
 .text-button {
   border: 0;
