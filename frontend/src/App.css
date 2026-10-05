@@ -246,10 +246,11 @@ select {
 .field textarea,
 .upload-box input {
   width: 100%;
-  border: 1px solid #cbd5e1;
+  border: 1px solid rgba(125, 211, 252, 0.4);
   border-radius: 10px;
   padding: 12px 14px;
-  background: #fff;
+  background: rgba(255, 255, 255, 0.96);
+  color: #0f172a;
 }
 
 .field input {
@@ -417,10 +418,11 @@ select {
 
 .upload-box {
   display: block;
-  background: #f8fafc;
-  border: 1px dashed #94a3b8;
+  background: rgba(15, 28, 41, 0.92);
+  border: 1px dashed rgba(125, 211, 252, 0.45);
   border-radius: 12px;
   padding: 14px;
+  color: #eaf7ff;
 }
 
 .upload-box.small-upload {
@@ -431,6 +433,7 @@ select {
   display: block;
   margin-bottom: 8px;
   font-weight: 700;
+  color: #eaf7ff;
 }
 
 .optional-panel {
