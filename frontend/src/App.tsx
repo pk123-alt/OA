@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import './App.css';
+import brandLogo from '../../logo.jpeg';
 import { predictSignal, predictXray } from './api/client';
 import { enqueueSync, getPendingSyncItems, savePatient } from './db';
 import type { Patient } from './types';
@@ -403,9 +404,12 @@ function App() {
 
   const header = (
     <header className="topbar">
-      <div>
-        <p className="eyebrow">{t('frontlineScreening')}</p>
-        <h1>{t('appName')}</h1>
+      <div className="brand-lockup">
+        <img className="brand-icon" src={brandLogo} alt="ArthroVix brand mark" />
+        <div className="brand-text">
+          <p className="eyebrow">{t('frontlineScreening')}</p>
+          <h1>{t('appName')}</h1>
+        </div>
       </div>
       <div className="topbar-actions">
         <span className={`status-pill ${networkStatus}`}>{t(networkStatus)}</span>

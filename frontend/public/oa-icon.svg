@@ -1,5 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="OA Screening Aid icon">
-  <rect width="256" height="256" rx="42" fill="#0f766e"/>
-  <path d="M64 178V78c0-10 8-18 18-18h42c10 0 18 8 18 18v100H64zm50-14h20v-24H114v24zm-20-52h52v-36H94v36zm98 66v-44h-20V70h32c10 0 18 8 18 18v72c0 10-8 18-18 18h-12z" fill="#ecfeff"/>
-  <circle cx="184" cy="98" r="18" fill="#a7f3d0"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="ArthroVix icon">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#071b2e"/>
+      <stop offset="100%" stop-color="#0d2f4f"/>
+    </linearGradient>
+    <linearGradient id="joint" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#77d9ff"/>
+      <stop offset="100%" stop-color="#ff9f43"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="42" fill="url(#bg)"/>
+  <path d="M56 170V84c0-16 12-28 28-28h48c16 0 28 12 28 28v86H56zm144 0V108h-24V80h40c16 0 28 12 28 28v34c0 16-12 28-28 28h-16zm-86-18h40v-26h-40v26z" fill="#dff6ff" fill-opacity="0.94"/>
+  <path d="M88 184c0-24 19-42 42-42s42 18 42 42v10H88v-10z" fill="#0b253d" opacity="0.75"/>
+  <circle cx="128" cy="112" r="26" fill="url(#joint)"/>
+  <path d="M102 115c10-10 32-10 42 0" stroke="#fff5f0" stroke-width="8" stroke-linecap="round" fill="none" opacity="0.8"/>
 </svg>
