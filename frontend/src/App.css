@@ -37,15 +37,17 @@
   margin: 0;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  font-size: 0.72rem;
-  color: #7dd3fc;
-  font-weight: 700;
+  font-size: 0.78rem;
+  color: #0b5d7a;
+  font-weight: 900;
 }
 
 h1 {
   margin: 4px 0 0;
-  font-size: clamp(2rem, 6vw, 2.7rem);
-  color: #e6f4ff;
+  font-size: clamp(2.2rem, 6vw, 3.2rem);
+  line-height: 1.05;
+  color: #0f172a;
+  font-weight: 900;
 }
 
 .topbar-actions {
@@ -154,12 +156,12 @@ select {
 }
 
 .screen {
-  background: rgba(10, 22, 36, 0.94);
-  border: 1px solid rgba(125, 211, 252, 0.28);
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(14, 116, 144, 0.28);
   border-radius: 18px;
   padding: 18px;
-  box-shadow: 0 8px 32px rgba(1, 8, 17, 0.42);
-  color: #eaf7ff;
+  box-shadow: 0 8px 32px rgba(15, 23, 42, 0.08);
+  color: #0f172a;
 }
 
 .progress-row {
@@ -214,21 +216,23 @@ select {
 .stack h2,
 .stack h3 {
   margin: 0 0 8px;
-  color: #eaf7ff;
+  color: #0f172a;
+  font-weight: 900;
 }
 
 .instruction-box p,
 .next-step-box p {
   margin: 0;
-  color: #cfe9ff;
+  color: #0f172a;
+  font-weight: 800;
 }
 
 .field {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  font-weight: 600;
-  color: #eaf7ff;
+  font-weight: 800;
+  color: #0f172a;
 }
 
 .field input,
@@ -243,12 +247,14 @@ select {
 
 .field input {
   min-height: 52px;
-  font-size: 1.05rem;
+  font-size: 1.08rem;
+  font-weight: 600;
+  color: #0f172a;
 }
 
 .field-error {
   color: #b91c1c;
-  font-weight: 600;
+  font-weight: 800;
 }
 
 .language-field {
@@ -259,8 +265,8 @@ select {
 
 .language-field legend {
   margin-bottom: 10px;
-  color: #eaf7ff;
-  font-weight: 600;
+  color: #0f172a;
+  font-weight: 900;
 }
 
 .language-grid {
@@ -294,8 +300,8 @@ select {
 
 .choice-field legend {
   margin-bottom: 10px;
-  color: #eaf7ff;
-  font-weight: 600;
+  color: #0f172a;
+  font-weight: 900;
 }
 
 .choice-row {
@@ -312,7 +318,8 @@ select {
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #eaf7ff;
+  color: #0f172a;
+  font-weight: 900;
 }
 
 .checkbox-row input {
@@ -322,11 +329,12 @@ select {
 
 .primary-button {
   width: 100%;
-  background: linear-gradient(135deg, #3ea3ff 0%, #ff9f43 100%);
-  color: #031827;
-  font-weight: 800;
-  padding: 12px 16px;
-  box-shadow: 0 12px 24px rgba(62, 163, 255, 0.22);
+  background: linear-gradient(135deg, #1d7ef2 0%, #ff9f43 100%);
+  color: #06121d;
+  font-weight: 900;
+  font-size: 1.04rem;
+  padding: 14px 16px;
+  box-shadow: 0 12px 24px rgba(29, 126, 242, 0.3);
 }
 
 .primary-button:disabled {
@@ -578,7 +586,7 @@ select {
   justify-content: space-between;
   gap: 12px;
   margin-top: 18px;
-  color: #cfe9ff;
+  color: #334155;
   font-size: 0.8rem;
 }
 

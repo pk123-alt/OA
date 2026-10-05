@@ -2,8 +2,8 @@
   font-family: Inter, 'Segoe UI', sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  color: #e2f3ff;
-  background: #051a2d;
+  color: #0f172a;
+  background: #eef5fb;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -20,7 +20,7 @@ html, body, #root {
 
 body {
   margin: 0;
-  background: radial-gradient(circle at top, #102843 0%, #071b2e 32%, #05131d 100%);
+  background: linear-gradient(180deg, #edf5fb 0%, #f8fafc 100%);
 }
 
 button, input, select {
