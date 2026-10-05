@@ -101,7 +101,7 @@ const resources = {
       otherJointDiseasesRequired: 'Enter the other joint disease details.',
       injuryDetailsRequired: 'Enter the previous injury details.',
       xrayValidationError: 'Choose a real image file smaller than 10 MB.',
-      eagValidationError: 'Choose a CSV or TXT file with numeric signal values.',
+      eagValidationError: 'Choose a processed gait CSV or TXT with 36 numeric sensor channels per row.',
       gaitValidationError: 'Choose a video between 10 and 30 seconds.',
       gaitGuidance: 'Stand 3 m away, whole body in frame, walk across 3-4 times.',
       eagPreviewAlt: 'EAG signal waveform preview',

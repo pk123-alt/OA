@@ -64,6 +64,23 @@ function normalizePhone(value: string) {
   return digits.startsWith('91') && digits.length === 12 ? digits.slice(2) : digits;
 }
 
+function parseGaitSignal(text: string): number[] | null {
+  const rows = text.split(/\r?\n/).map((row) => row.trim()).filter(Boolean)
+    .map((row) => row.split(/[\s,;]+/));
+  if (rows.length < 2) return null;
+
+  const hasHeader = rows[0].some((value) => !Number.isFinite(Number(value)));
+  const hasPacketCounter = hasHeader && rows[0][0].toLowerCase() === 'packetcounter';
+  const dataRows = (hasHeader ? rows.slice(1) : rows).map((row) => row.map(Number));
+  const expectedColumns = hasPacketCounter ? 37 : 36;
+
+  if (dataRows.length < 2 || dataRows.some((row) => row.length !== expectedColumns || row.some((value) => !Number.isFinite(value)))) {
+    return null;
+  }
+
+  return dataRows.flat().slice(0, 500);
+}
+
 function LanguageSwitcher({ language, onChange }: { language: string; onChange: (value: string) => void }) {
   const { t } = useTranslation();
   return (
@@ -337,8 +354,8 @@ function App() {
       setUploadError(t('eagValidationError'));
       return;
     }
-    const values = (await file.text()).split(/[\s,;]+/).map(Number).filter(Number.isFinite);
-    if (values.length < 2) {
+    const values = parseGaitSignal(await file.text());
+    if (!values) {
       setEagStatus('invalid');
       setUploadError(t('eagValidationError'));
       return;
