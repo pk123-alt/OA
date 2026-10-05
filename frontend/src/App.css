@@ -205,8 +205,8 @@ select {
 }
 
 .instruction-box {
-  background: #f8fafc;
-  border: 1px solid #dfe7ef;
+  background: rgba(15, 28, 41, 0.92);
+  border: 1px solid rgba(125, 211, 252, 0.25);
   border-radius: 14px;
   padding: 16px;
 }
@@ -216,14 +216,14 @@ select {
 .stack h2,
 .stack h3 {
   margin: 0 0 8px;
-  color: #0b2540;
+  color: #eaf7ff;
   font-weight: 900;
 }
 
 .instruction-box p,
 .next-step-box p {
   margin: 0;
-  color: #0c2e52;
+  color: #dfeefc;
   font-weight: 800;
 }
 
@@ -580,8 +580,8 @@ select {
 }
 
 .next-step-box {
-  background: #f8fafc;
-  border: 1px solid #dfe7ef;
+  background: rgba(15, 28, 41, 0.92);
+  border: 1px solid rgba(125, 211, 252, 0.25);
 }
 
 .next-step-box h3 {
