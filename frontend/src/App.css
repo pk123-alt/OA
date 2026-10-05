@@ -216,14 +216,14 @@ select {
 .stack h2,
 .stack h3 {
   margin: 0 0 8px;
-  color: #eaf7ff;
+  color: #0b2540;
   font-weight: 900;
 }
 
 .instruction-box p,
 .next-step-box p {
   margin: 0;
-  color: #dbeefe;
+  color: #0c2e52;
   font-weight: 800;
 }
 
