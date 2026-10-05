@@ -32,6 +32,61 @@ h1 {
   gap: 10px;
 }
 
+.settings-control {
+  position: relative;
+}
+
+.settings-button {
+  display: inline-grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #fff;
+  color: #334155;
+  cursor: pointer;
+}
+
+.settings-button span {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.settings-popover {
+  position: absolute;
+  z-index: 5;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 150px;
+  padding: 5px;
+  border: 1px solid #d7e7e5;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+}
+
+.settings-popover button {
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: #991b1b;
+  text-align: left;
+  cursor: pointer;
+}
+
+.settings-popover button:hover,
+.settings-popover button:focus-visible,
+.settings-button:hover,
+.settings-button:focus-visible {
+  background: #f1f5f9;
+  outline: 2px solid #0f766e;
+  outline-offset: 2px;
+}
+
 .status-pill {
   display: inline-flex;
   align-items: center;

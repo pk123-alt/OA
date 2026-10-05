@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import './App.css';
-import { predictXray } from './api/client';
+import { predictSignal, predictXray } from './api/client';
 import { enqueueSync, getPendingSyncItems, savePatient } from './db';
 import type { Patient } from './types';
 
@@ -99,15 +99,27 @@ function App() {
   const [xrayFile, setXrayFile] = useState<File | null>(null);
   const [xrayPreviewUrl, setXrayPreviewUrl] = useState('');
   const [eagFileName, setEagFileName] = useState('');
+  const [eagFile, setEagFile] = useState<File | null>(null);
   const [gaitFileName, setGaitFileName] = useState('');
   const [xrayStatus, setXrayStatus] = useState<UploadStatus>('not-uploaded');
   const [eagStatus, setEagStatus] = useState<UploadStatus>('not-uploaded');
   const [gaitStatus, setGaitStatus] = useState<UploadStatus>('not-uploaded');
   const [eagSamples, setEagSamples] = useState<number[]>([]);
+  const [signalPrediction, setSignalPrediction] = useState<{ label: string; probabilities: Record<string, number> } | null>(null);
   const [uploadError, setUploadError] = useState('');
   const [prediction, setPrediction] = useState<{ severity: string; confidence: number } | null>(null);
   const [isPredicting, setIsPredicting] = useState(false);
   const [showPredictionResults, setShowPredictionResults] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
+  useEffect(() => {
+    if (!isSettingsOpen) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setIsSettingsOpen(false);
+    };
+    window.addEventListener('keydown', closeOnEscape);
+    return () => window.removeEventListener('keydown', closeOnEscape);
+  }, [isSettingsOpen]);
 
   useEffect(() => {
     localStorage.setItem(DRAFT_KEY, JSON.stringify(form));
@@ -255,6 +267,11 @@ function App() {
   const handleXray = async (file: File | undefined) => {
     if (!file) return;
     setUploadError('');
+    setXrayFile(null);
+    setXrayFileName('');
+    setXrayPreviewUrl('');
+    setPrediction(null);
+    setShowPredictionResults(false);
     if (!file.type.startsWith('image/') || file.size > 10 * 1024 * 1024) {
       setXrayStatus('failed');
       setUploadError(t('xrayValidationError'));
@@ -272,25 +289,49 @@ function App() {
     }
   };
 
-  const predictOaRisk = async () => {
-    if (!xrayFile) return;
+  const continueWithFiles = async () => {
+    if (!xrayFile && !eagFile) return;
     setIsPredicting(true);
     setUploadError('');
-    try {
-      const result = await predictXray(xrayFile);
+    setPrediction(null);
+    setSignalPrediction(null);
+    const errors: string[] = [];
+
+    const [xrayResult, signalResult] = await Promise.all([
+      xrayFile ? predictXray(xrayFile).then((result) => ({ result })).catch(() => null) : Promise.resolve(null),
+      eagFile ? predictSignal(eagFile).then((result) => ({ result })).catch(() => null) : Promise.resolve(null),
+    ]);
+
+    if (xrayResult) {
+      const result = xrayResult.result;
       const confidence = Number(result.probabilities[String(result.predicted_class)] ?? 0);
       setPrediction({ severity: result.severity || result.grade_labels[String(result.predicted_class)], confidence });
-      setShowPredictionResults(true);
-    } catch {
-      setUploadError(t('predictionUnavailable'));
-    } finally {
-      setIsPredicting(false);
+    } else if (xrayFile) {
+      errors.push(t('predictionUnavailable'));
     }
+
+    if (signalResult) {
+      setSignalPrediction({
+        label: signalResult.result.predicted_label,
+        probabilities: signalResult.result.probabilities,
+      });
+    } else if (eagFile) {
+      errors.push(t('signalPredictionUnavailable'));
+    }
+
+    setUploadError(errors.join(' '));
+    setShowPredictionResults(true);
+    setIsPredicting(false);
   };
 
   const handleEag = async (file: File | undefined) => {
     if (!file) return;
     setUploadError('');
+    setEagFile(null);
+    setEagFileName('');
+    setEagSamples([]);
+    setSignalPrediction(null);
+    setShowPredictionResults(false);
     if (!/\.(csv|txt)$/i.test(file.name) || file.size > 10 * 1024 * 1024) {
       setEagStatus('failed');
       setUploadError(t('eagValidationError'));
@@ -302,6 +343,8 @@ function App() {
       setUploadError(t('eagValidationError'));
       return;
     }
+
+    setEagFile(file);
     setEagFileName(file.name);
     setEagSamples(values.slice(0, 500));
     setEagStatus('uploaded');
@@ -335,6 +378,12 @@ function App() {
     video.src = url;
   };
 
+  const handleLogout = () => {
+    ['oa-worker-name', 'userId', 'user_id', DRAFT_KEY, SAVED_PATIENT_KEY, HISTORY_PAGE_KEY]
+      .forEach((key) => localStorage.removeItem(key));
+    window.location.reload();
+  };
+
   const header = (
     <header className="topbar">
       <div>
@@ -344,6 +393,24 @@ function App() {
       <div className="topbar-actions">
         <span className={`status-pill ${networkStatus}`}>{t(networkStatus)}</span>
         <LanguageSwitcher language={i18n.language} onChange={changeAppLanguage} />
+        <div className="settings-control">
+          <button
+            className="settings-button"
+            type="button"
+            aria-label={t('settings')}
+            aria-expanded={isSettingsOpen}
+            aria-controls="settings-menu"
+            title={t('settings')}
+            onClick={() => setIsSettingsOpen((open) => !open)}
+          >
+            <span aria-hidden="true">&#9881;</span>
+          </button>
+          {isSettingsOpen && (
+            <div className="settings-popover" id="settings-menu">
+              <button type="button" onClick={handleLogout}>{t('logout')}</button>
+            </div>
+          )}
+        </div>
       </div>
     </header>
   );
@@ -354,20 +421,37 @@ function App() {
         {header}
         <main className="layout">
           <section className="screen stack">
-            {showPredictionResults && prediction ? (
+            {showPredictionResults ? (
               <>
                 <div className="instruction-box">
                   <h2>{t('predictionResultsTitle')}</h2>
                   <p>{t('predictionResultsIntro')}</p>
                 </div>
-                <div className="result-card show">
-                  <strong>{prediction.severity}</strong>
-                  <small>{t('riskConfidence', { confidence: (prediction.confidence * 100).toFixed(1) })}</small>
-                </div>
-                <div className="next-step-box">
-                  <h3>{t('whatNextTitle')}</h3>
-                  <p>{prediction.severity === 'Grade 0' ? t('lowerOaRisk') : t('doctorReviewAdvice')}</p>
-                </div>
+                {prediction && (
+                  <>
+                    <div className="result-card show">
+                      <strong>{t('xrayPredictionLabel')}</strong>
+                      <span>{prediction.severity}</span>
+                      <small>{t('riskConfidence', { confidence: (prediction.confidence * 100).toFixed(1) })}</small>
+                    </div>
+                    <div className="next-step-box">
+                      <h3>{t('whatNextTitle')}</h3>
+                      <p>{prediction.severity === 'Grade 0' ? t('lowerOaRisk') : t('doctorReviewAdvice')}</p>
+                    </div>
+                  </>
+                )}
+                {signalPrediction && (
+                  <div className="result-card show">
+                    <strong>{t('gaitSignalPrediction')}</strong>
+                    <span>{signalPrediction.label}</span>
+                    <small>
+                      {Object.entries(signalPrediction.probabilities)
+                        .map(([label, value]) => `${label}: ${(value * 100).toFixed(1)}%`)
+                        .join(' | ')}
+                    </small>
+                  </div>
+                )}
+                {uploadError && <div className="message error">{uploadError}</div>}
                 <button className="back-btn" type="button" onClick={() => setShowPredictionResults(false)}>{t('backToUploads')}</button>
               </>
             ) : (
@@ -387,14 +471,12 @@ function App() {
                 <div className={`upload-status ${xrayStatus}`}>{t(xrayStatus)}</div>
                 {xrayFileName && <div className="file-readout">{xrayFileName} <button type="button" className="text-button" onClick={() => { setXrayFileName(''); setXrayFile(null); setXrayPreviewUrl(''); setXrayStatus('not-uploaded'); setPrediction(null); }}>{t('removeReplace')}</button></div>}
                 {xrayPreviewUrl && <div className="preview-wrap"><img src={xrayPreviewUrl} alt={t('xrayPreviewAlt')} /></div>}
-                <button className="primary-button" type="button" onClick={() => void predictOaRisk()} disabled={!xrayFile || isPredicting}>{isPredicting ? t('predicting') : t('predictOaRisk')}</button>
-
                 <label className="upload-box">
                   <span>{t('uploadEag')}</span>
                   <input type="file" accept=".csv,.txt,text/csv,text/plain" onChange={(event) => void handleEag(event.target.files?.[0])} />
                 </label>
                 <div className={`upload-status ${eagStatus}`}>{t(eagStatus)}</div>
-                {eagFileName && <div className="file-readout">{eagFileName} <button type="button" className="text-button" onClick={() => { setEagFileName(''); setEagSamples([]); setEagStatus('not-uploaded'); }}>{t('removeReplace')}</button></div>}
+                {eagFileName && <div className="file-readout">{eagFileName} <button type="button" className="text-button" onClick={() => { setEagFileName(''); setEagFile(null); setEagSamples([]); setSignalPrediction(null); setEagStatus('not-uploaded'); }}>{t('removeReplace')}</button></div>}
                 {eagSamples.length > 1 && <svg className="waveform-preview" viewBox="0 0 500 100" role="img" aria-label={t('eagPreviewAlt')}><polyline points={eagSamples.map((value, index) => `${(index / (eagSamples.length - 1)) * 500},${50 - (value / Math.max(...eagSamples.map(Math.abs), 1)) * 45}`).join(' ')} /></svg>}
 
                 <label className="upload-box">
@@ -402,13 +484,14 @@ function App() {
                   <input type="file" accept="video/*" capture="environment" onChange={(event) => handleGait(event.target.files?.[0])} />
                 </label>
                 <small>{t('gaitGuidance')}</small>
+                <small>{t('videoPredictionUnavailable')}</small>
                 <div className={`upload-status ${gaitStatus}`}>{t(gaitStatus)}</div>
                 {gaitFileName && <div className="file-readout">{gaitFileName} <button type="button" className="text-button" onClick={() => { setGaitFileName(''); setGaitStatus('not-uploaded'); }}>{t('removeReplace')}</button></div>}
 
                 <div className="next-step-box">
                   <p>{t('filesSavedOnDevice')}</p>
                 </div>
-                <button className="primary-button" type="button" disabled={!xrayFileName && !eagFileName && !gaitFileName}>{t('continueWithFiles')}</button>
+                <button className="primary-button" type="button" onClick={() => void continueWithFiles()} disabled={(!xrayFile && !eagFile) || isPredicting}>{isPredicting ? t('predicting') : t('continueWithFiles')}</button>
                 <button className="back-btn" type="button" onClick={() => { localStorage.removeItem(HISTORY_PAGE_KEY); setHistorySaved(false); }}>{t('backToHistory')}</button>
               </>
             ) : (

@@ -8,9 +8,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from PIL import Image
 from torchvision import transforms
 
+from oa_signal_model import predict_signal_file
+
 
 PROJECT_DIR = Path(__file__).resolve().parent
 MODEL_PATH = PROJECT_DIR / "models" / "resnet18_3class_finetuned_best.pth"
+OA_GAIT_MODEL_PATH = PROJECT_DIR / "models" / "oa_binary_model.pth"
 GRADE_LABELS = {
     0: "Grade 0",
     1: "Grade 1",
@@ -83,3 +86,31 @@ async def predict_severity(file: UploadFile = File(...)):
         return response
     except Exception as exc:
         raise HTTPException(status_code=400, detail=f"Unable to process image: {exc}")
+
+
+@app.post("/predict-oa-gait")
+async def predict_oa_gait(file: UploadFile = File(...)):
+    if not file.content_type or "text" not in file.content_type and "plain" not in file.content_type and "csv" not in file.content_type:
+        raise HTTPException(status_code=400, detail="Please upload a gait signal text/csv file.")
+
+    try:
+        if not OA_GAIT_MODEL_PATH.exists():
+            raise FileNotFoundError(f"OA gait model not found: {OA_GAIT_MODEL_PATH}")
+
+        signal_bytes = await file.read()
+        suffix = Path(file.filename).suffix if file.filename else ".txt"
+        temp_signal_path = PROJECT_DIR / f"tmp_oa_signal_upload{suffix}"
+        temp_signal_path.write_bytes(signal_bytes)
+
+        result = predict_signal_file(OA_GAIT_MODEL_PATH, temp_signal_path)
+        temp_signal_path.unlink(missing_ok=True)
+
+        return {
+            "predicted_label": result["predicted_label"],
+            "prediction_index": result["prediction_index"],
+            "class_names": result["class_names"],
+            "probabilities": result["probabilities"],
+            "model": OA_GAIT_MODEL_PATH.name,
+        }
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail=f"Unable to process gait signal: {exc}")

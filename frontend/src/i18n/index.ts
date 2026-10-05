@@ -7,6 +7,8 @@ const resources = {
   en: {
     translation: {
       appName: 'OA Screening Aid',
+      settings: 'Settings',
+      logout: 'Log out',
       login: 'Login',
       dashboard: 'Dashboard',
       newPatient: 'New patient',
@@ -78,6 +80,10 @@ const resources = {
       failed: 'Failed',
       removeReplace: 'Remove / replace',
       continueWithFiles: 'Continue with selected files',
+      xrayPredictionLabel: 'X-ray prediction',
+      gaitSignalPrediction: 'Gait signal prediction',
+      signalPredictionUnavailable: 'The gait signal model is unavailable. Please try again when the service is available.',
+      videoPredictionUnavailable: 'Video prediction is not available yet. Gait signal predictions require a CSV or TXT file.',
       next: 'Next',
       backToHistory: 'Back to patient history',
       predictOaRisk: 'Predict OA risk',
