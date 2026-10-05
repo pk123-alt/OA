@@ -156,12 +156,12 @@ select {
 }
 
 .screen {
-  background: rgba(255, 255, 255, 0.96);
-  border: 1px solid rgba(14, 116, 144, 0.28);
+  background: rgba(9, 20, 33, 0.94);
+  border: 1px solid rgba(125, 211, 252, 0.32);
   border-radius: 18px;
   padding: 18px;
-  box-shadow: 0 8px 32px rgba(15, 23, 42, 0.08);
-  color: #0f172a;
+  box-shadow: 0 8px 32px rgba(1, 8, 17, 0.42);
+  color: #eaf7ff;
 }
 
 .progress-row {
@@ -216,14 +216,14 @@ select {
 .stack h2,
 .stack h3 {
   margin: 0 0 8px;
-  color: #0f172a;
+  color: #eaf7ff;
   font-weight: 900;
 }
 
 .instruction-box p,
 .next-step-box p {
   margin: 0;
-  color: #0f172a;
+  color: #dbeefe;
   font-weight: 800;
 }
 
@@ -232,7 +232,7 @@ select {
   flex-direction: column;
   gap: 8px;
   font-weight: 800;
-  color: #0f172a;
+  color: #eaf7ff;
 }
 
 .field input,
