@@ -466,7 +466,7 @@ function App() {
 
                 <label className="upload-box">
                   <span>{t('uploadXray')}</span>
-                  <input type="file" accept="image/*" capture="environment" onChange={(event) => void handleXray(event.target.files?.[0])} />
+                  <input type="file" accept="image/*" onChange={(event) => void handleXray(event.target.files?.[0])} />
                 </label>
                 <div className={`upload-status ${xrayStatus}`}>{t(xrayStatus)}</div>
                 {xrayFileName && <div className="file-readout">{xrayFileName} <button type="button" className="text-button" onClick={() => { setXrayFileName(''); setXrayFile(null); setXrayPreviewUrl(''); setXrayStatus('not-uploaded'); setPrediction(null); }}>{t('removeReplace')}</button></div>}
@@ -481,7 +481,7 @@ function App() {
 
                 <label className="upload-box">
                   <span>{t('uploadGait')}</span>
-                  <input type="file" accept="video/*" capture="environment" onChange={(event) => handleGait(event.target.files?.[0])} />
+                  <input type="file" accept="video/*" onChange={(event) => handleGait(event.target.files?.[0])} />
                 </label>
                 <small>{t('gaitGuidance')}</small>
                 <small>{t('videoPredictionUnavailable')}</small>
